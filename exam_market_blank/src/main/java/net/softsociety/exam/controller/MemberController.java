@@ -32,22 +32,23 @@ public class MemberController
 		return "signupForm";
 	}
 	
-	//로그인 홈페이지 접속
-	@GetMapping("login")
-	public String login()
-	{
-		log.debug("로그인 홈페이지 접근");
-		return "loginForm";
-	}
 	
 	//회원가입
-	@PostMapping("joinForm")
+	@PostMapping("join")
 	public String joinForm(Member member) 
 	{
 		log.debug("회원 가입 보냄");
 		int n = service.join(member);
 		log.debug("회원 가입 돌아옴");
 		return "redirect:/";
+	}
+	
+	//로그인 홈페이지 접속
+	@GetMapping("login")
+	public String login()
+	{
+		log.debug("로그인 홈페이지 접근");
+		return "loginForm";
 	}
 	
 	//아이디 중복 체크
