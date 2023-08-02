@@ -1,0 +1,54 @@
+-- 중고거래 사이트 예제
+
+
+-- 회원정보 테이블
+CREATE TABLE market_member (
+    memberid VARCHAR2(20) PRIMARY KEY,
+    memberpw VARCHAR2(100) NOT NULL,
+    membername VARCHAR2(20) NOT NULL,
+    phone VARCHAR2(20) NOT NULL,
+    enabled NUMBER(1) DEFAULT 1,
+    rolename VARCHAR2(20) DEFAULT 'ROLE_USER'
+);
+
+
+-- 판매글 테이블
+CREATE TABLE market_board (
+    boardnum NUMBER DEFAULT market_board_seq.NEXTVAL PRIMARY KEY,
+    memberid VARCHAR2(20) NOT NULL,
+    title VARCHAR2(200) NOT NULL,
+    contents VARCHAR2(2000) NOT NULL,
+    inputdate DATE DEFAULT SYSDATE,
+    category VARCHAR2(50),
+    soldout CHAR(1) DEFAULT 'N',
+    buyerid VARCHAR2(20)
+);
+
+
+--판매글 일련번호 시퀀스
+CREATE SEQUENCE market_board_seq
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE 
+    NOCYCLE; 
+
+
+
+-- 리플 테이블
+CREATE TABLE market_reply (
+    replynum NUMBER PRIMARY KEY,
+    boardnum NUMBER,
+    memberid VARCHAR2(20) NOT NULL,
+    replytext VARCHAR2(500),
+    inputdate DATE DEFAULT SYSDATE,
+    FOREIGN KEY (boardnum) REFERENCES market_board (boardnum)
+);
+
+
+--리플 일련번호 시퀀스
+CREATE SEQUENCE market_reply_seq
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE
+    NOCYCLE;
+

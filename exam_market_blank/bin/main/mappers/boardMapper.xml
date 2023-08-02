@@ -1,0 +1,81 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.softsociety.exam.dao.BoardDAO">
+
+<!--판매글 저장 -->
+<insert id="boardInsert" parameterType="Board">
+	insert into market_board 
+		(boardnum, memberid, title, contents, category)
+	values
+		(market_board_seq.NEXTVAL, #{memberid}, #{title}, #{contents}, #{category})
+</insert>
+
+<!-- 판매되지 않은 게시글 전부 읽기 -->
+<select id="boardRead" resultType="Board">
+    select * from market_board where soldout = 'N'
+</select>
+
+<!-- 게시글 하나 읽기 -->
+<select id="boardReadOne" parameterType="int" resultType="Board">
+	select 
+		boardnum, memberid, title, contents, TO_CHAR(inputdate, 'YYYY-MM-DD HH24:MI:SS') as inputdate, category, soldout, buyerid
+	from 
+		market_board
+	where 
+		boardnum = #{boardnum}
+</select>
+
+<!-- 게시글 삭제처리 -->
+<delete id="deleteBoard" parameterType="int">
+    DELETE FROM 
+    	market_board 
+    WHERE 
+    	boardnum = #{boardnum}
+</delete>
+
+<!-- 게시글 구매처리 -->
+<update id="buyBoard" parameterType="HashMap">
+    UPDATE 
+    	market_board
+    SET 
+    	soldout = 'Y', buyerid = #{memberid}
+    WHERE 
+    	boardnum = #{boardnum}
+</update>
+
+<!-- 댓글 저장 -->
+<insert id="replyInput" parameterType="Reply">
+    INSERT INTO market_reply (replynum, boardnum, memberid, replytext)
+    VALUES (market_reply_seq.NEXTVAL, #{boardnum}, #{memberid}, #{replytext})
+</insert>
+
+<!-- 댓글 조회 -->
+<select id="getReply" resultType="Reply">
+    select * from market_reply where boardnum = #{boardnum}
+</select>
+
+<!-- 게시글 전체 검색 -->
+<select id="searchAll" resultType="Board">
+    select * from market_board
+</select>
+
+<!-- 게시글 조건 검색 -->
+<select id="search" parameterType="HashMap" resultType="Board">
+    SELECT * FROM market_board
+    <where>
+        <if test="category == 'computer'">
+            category = 'computer' AND upper(title) like upper('%' || #{keyword} || '%')
+        </if>
+        <if test="category == 'phone'">
+            category = 'phone' AND upper(title) like upper('%' || #{keyword} || '%')
+        </if>
+        <if test="category == 'notbook'">
+            category = 'notbook' AND upper(title) like upper('%' || #{keyword} || '%')
+        </if>
+    </where>
+</select>
+
+
+</mapper>

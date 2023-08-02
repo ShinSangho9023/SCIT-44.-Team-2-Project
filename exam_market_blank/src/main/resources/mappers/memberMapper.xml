@@ -1,0 +1,19 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.softsociety.exam.dao.MemberDAO">
+
+<!-- 회원정보 저장 -->
+<insert id="join" parameterType="Member">
+	 INSERT INTO market_member 
+	 	(memberid, memberpw, membername, phone)
+	 VALUES 
+	 	(#{memberid}, #{memberpw}, #{membername}, #{phone})
+</insert>
+
+<select id="idCheck" parameterType="String" resultType="Int">
+	SELECT COUNT(*) FROM market_member WHERE memberid like #{memberid}
+</select>
+
+</mapper>

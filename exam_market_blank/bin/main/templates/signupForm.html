@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>SignUpForm</title>
+<script th:src="@{/js/jquery-3.6.0.js}"></script>
+<script>
+
+$(document).ready(function()
+{
+	$("#id").keyup(idCheck);
+});
+
+function idCheck() 
+{
+	let isTrue = true;
+	let id = $('#id').val();
+	console.log("id체크 ajax :" + id);
+	
+	if(id.length < 3) 
+	{
+		$('#idfind').text('글자수가 3 이상이여야 합니다.');
+		$('submitButton').attr('disabled',true);
+	}
+	else
+	{
+		$.ajax
+		({
+			url: 'idCheck',
+			type:'get',
+			data: {id: $('#id').val()},
+			dataType:'text',
+			success: function (s)
+			{
+				if(s == '0')
+				{
+					console.log("아이디 없음");
+					$('#idfind').text('아이디 사용 가능합니다.');
+					$('#submitButton').attr('disabled',false);
+				}
+				else
+				{
+					console.log("아이디 있음");
+					$('#idfind').text('아이디가 이미 있습니다.');
+					$('#submitButton').attr('disabled',true);
+				}
+			},
+			error: function(e)
+			{
+				alert('오류입니다.');
+			}
+		});
+	}
+}
+
+function resetForm() 
+{
+	document.getElementById("id").value = "";
+	document.getElementById("name").value = "";
+	document.getElementById("pw").value = "";
+	document.getElementById("phone").value = "";
+}
+
+function check() 
+{
+	console.log("체크 확인");
+	let id = document.getElementById("id").value;
+	let pw = document.getElementById("pw").value;
+	let name = document.getElementById("name").value;
+	let phone = document.getElementById("phone").value;
+
+	if (id.length > 10 || id.length < 3) {
+		alert("ID는 3~10자로 입력하세요.");
+		document.getElementById("id").value = "";
+		return false;
+	}
+
+	if (pw.length > 10 || pw.length < 3) {
+		alert("비밀번호는 3~10자로 입력하세요.");
+		document.getElementById("pw").value = "";
+		return false;
+	}
+	
+	if(name == null || name == "") 
+	{
+		alert("이름을 입력하세요");
+		document.getElementById("name").value = "";
+		return false;
+	}
+	
+	if(phone == null || phone == "") 
+	{
+		alert("전화번호를 입력하세요");
+		document.getElementById("phone").value = "";
+		return false;
+	}
+}
+
+</script>
+
+
+</head>
+<body>
+
+	<h1>[ 회원가입 ]</h1>
+	<form th:action="@{/member/joinForm}" method="post" onsubmit="return check()">
+		<table>
+			<tr>
+				<th>아이디</th>
+				<td><input type="text" name="memberid" id="id"></td>
+				<td><p id="idfind"></p></td>
+			</tr>	
+			
+			<tr>	
+				<th>비밀번호</th>
+				<td><input type="password" name="memberpw" id="pw"></td>
+			</tr>
+			<tr>
+				<th>이름</th>
+				<td><input type="text" name="membername" id="name"></td>
+			</tr>
+			<tr>
+				<th>전화번호</th>
+				<td><input type="tel" name="phone" id="phone"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+				<input type="submit" value="가입" id="submitButton" disabled="disabled">
+				<input type="button" value="다시쓰기" onclick="resetForm()">
+			</td>
+		</table>
+	</form>
+
+</body>
+</html>

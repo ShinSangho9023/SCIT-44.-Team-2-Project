@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>판매 정보</title>
+<script th:src="@{/js/jquery-3.6.0.js}"></script>
+
+<script>
+	$(document).ready(function()
+		{
+			replyOutput();
+			$('#button1').click(replyInput);
+		});
+	
+	function replyInput() 
+	{
+		let id = $('#memberid').val();
+		let reply = $('#reply').val();
+		let num = $('#boardnum').val();
+		console.log('버튼이 클릭되었습니다.');
+		console.log(id);
+		console.log(reply);
+		console.log(num);
+		
+		$.ajax
+		({
+			url:'replyInput',
+			type:'get',
+			data: {memberid: id, replytext: reply, boardnum: num},
+			success: function ()
+			{
+				$('#reply').val('');
+				alert('저장되었습니다.');
+				replyOutput();
+			},
+			error: function()
+			{
+				alert('실행실패')
+			}
+		});	
+	}
+	
+	function replyOutput() 
+	{
+		let num = $('#boardnum').val();
+		
+		$.ajax
+		({
+			url:'getReply',
+			type:'get',
+			data: {boardnum: num},
+			dataType: 'json',
+			success: function(list)
+			{
+				let table = `<table>
+								<tr>
+									<td>아이디</td>
+									<td>내용</td>
+									<td>시간</td>
+								</tr>`;
+				$(list).each(function(index,item)
+				{
+					table +=`<tr>
+								<td>${item.memberid}</td>
+								<td>${item.replytext}</td>
+								<td>${item.inputdate}</td>
+							</tr>`;
+				});
+				
+				table += '</table>';
+				$('#output').html(table);
+			},
+			error: function()
+			{
+				alert('실행실패')
+			}
+		});	
+	}
+	
+</script>
+
+</head>
+
+<body>
+	<h1>[ 판매 정보 ]</h1>
+	<p><a th:href="@{/}">메인 화면</a></p>
+	<table>
+		<tr>
+			<td>판매자</td>
+			<td><span th:text="${board.memberid}"></span></td>
+		</tr>
+		
+		<tr>
+			<td>작성일</td>
+			<td><span th:text="${board.inputdate}"></span></td>
+		</tr>
+	
+		<tr>
+			<td>제목</td>
+			<td><span th:text="${board.title}"></span></td>
+		</tr>
+		
+		<tr>
+			<td>내용</td>
+			<td><span th:text="${board.contents}"></span></td>
+		</tr>
+		
+		<tr th:if="${board.memberid == #authentication.name}">
+    		<td></td>
+	    	<td>
+	       		 <a th:href="@{/board/delete(boardnum=${board.boardnum})}">삭제</a>
+	    	</td>
+		</tr>
+		
+		<tr th:if="${board.memberid != #authentication.name}">
+    		<td></td>
+	    	<td>
+	       		 <a th:href="@{/board/buyBoard(boardnum=${board.boardnum})}">구입하기</a>
+	    	</td>
+		</tr>
+	
+	</table>
+	
+	<br>
+	
+	<input type="text" id="reply" name="replytext"> <input type="button" value="확인" id="button1">
+	<input type="hidden" th:value="${board.boardnum}" id="boardnum">
+	<input type="hidden" th:value="${#authentication.name}" id="memberid">
+	
+	<br>
+	<div id="output"></div>
+	
+	
+</body>
+</html>
